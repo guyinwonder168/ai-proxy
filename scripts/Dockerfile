@@ -13,8 +13,10 @@ COPY go.mod go.sum ./
 # Download all dependencies
 RUN go mod download
 
-# Copy the source code
-COPY . .
+# Copy only the necessary source files for building the application
+COPY main.go ./
+COPY internal/ ./internal/
+COPY scripts/docker-entrypoint.sh ./scripts/docker-entrypoint.sh
 
 # Build the binary statically
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /app/ai-proxy main.go
@@ -35,7 +37,7 @@ RUN mkdir -p /config && chown ai-proxy:ai-proxy /config
 # Copy the binary from the builder stage
 COPY --from=builder /app/ai-proxy /app/ai-proxy
 
-# Copy the entrypoint script
+# Copy the entrypoint script from the builder stage
 COPY --from=builder /app/scripts/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
 # Set proper permissions for the entrypoint script
