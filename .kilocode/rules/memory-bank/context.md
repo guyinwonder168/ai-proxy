@@ -1,6 +1,6 @@
 ## Current Work Focus
 
-As of 2025-08-23, the AI Proxy Server has undergone significant architectural improvements and is now in a stable, production-ready state with enhanced security, performance, and maintainability.
+As of 2025-08-23, the AI Proxy Server has undergone significant architectural improvements and is now in a stable, production-ready state with enhanced security, performance, and maintainability. The project has been forked to continue development with new features and improvements.
 
 ### Recent Major Improvements
 
@@ -75,4 +75,4 @@ The system now demonstrates:
    - Add more comprehensive examples and use cases
    - Create detailed API documentation
 
-The AI Proxy Server is now a robust, production-ready solution for managing multiple AI providers through a unified interface with strong security, performance, and reliability characteristics.
+The AI Proxy Server is now a robust, production-ready solution for managing multiple AI providers through a unified interface with strong security, performance, and reliability characteristics. The project has been forked to continue development with new features and improvements.

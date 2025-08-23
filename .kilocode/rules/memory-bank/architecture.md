@@ -142,13 +142,13 @@ flowchart TD
    - Uses a centralized HTTP client factory for consistent configuration across all providers
 
 10. **AI Provider**: External LLM service APIs
-   - Supports multiple providers including OpenAI, Google Gemini, Sberbank GigaChat, Groq, Cloudflare, OpenRouter, and others
-   - Each provider has its own client implementation with provider-specific logic
-   - Handles authentication tokens and API keys
-   - Manages provider-specific request/response transformations
-   - Implements provider-specific logic for authentication, request formatting, and response processing
-   - Each provider client is created with specific configuration parameters including timeouts and connection pooling settings
-   - Supports both streaming and non-streaming responses depending on provider capabilities
+    - Supports multiple providers including OpenAI, Google Gemini, Sberbank GigaChat, Groq, Cloudflare, OpenRouter, and others
+    - Each provider has its own client implementation with provider-specific logic
+    - Handles authentication tokens and API keys
+    - Manages provider-specific request/response transformations
+    - Implements provider-specific logic for authentication, request formatting, and response processing
+    - Each provider client is created with specific configuration parameters including timeouts and connection pooling settings
+    - Supports both streaming and non-streaming responses depending on provider capabilities
 
 ### Architecture Patterns:
 

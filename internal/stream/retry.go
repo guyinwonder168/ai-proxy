@@ -2,10 +2,11 @@ package stream
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/binary"
 	"fmt"
 	"io"
 	"log"
-	"math/rand"
 	"net/http"
 	"strings"
 	"time"
@@ -123,6 +124,19 @@ func (r *RetryableStreamReader) Read(p []byte) (n int, err error) {
 	return 0, fmt.Errorf("max retries exceeded")
 }
 
+// cryptoRandFloat64 generates a cryptographically secure random float64 between 0.0 and 1.0
+func cryptoRandFloat64() (float64, error) {
+	var b [8]byte
+	_, err := rand.Read(b[:])
+	if err != nil {
+		return 0, err
+	}
+
+	// Convert bytes to uint64 then to float64 in [0,1)
+	u := binary.LittleEndian.Uint64(b[:])
+	return float64(u) / (1 << 64), nil
+}
+
 // calculateDelay calculates the delay with exponential backoff and jitter
 func (r *RetryableStreamReader) calculateDelay(attempt int) time.Duration {
 	// Calculate exponential backoff: baseDelay * 2^attempt
@@ -134,7 +148,13 @@ func (r *RetryableStreamReader) calculateDelay(attempt int) time.Duration {
 	}
 
 	// Apply jitter: delay * (1 - jitter + random * 2 * jitter)
-	jitterFactor := 1.0 - r.jitter + rand.Float64()*2*r.jitter
+	random, err := cryptoRandFloat64()
+	if err != nil {
+		// Fallback to math/rand if crypto/rand fails (should be rare)
+		log.Printf("Warning: failed to generate crypto random number, using math/rand: %v", err)
+		random = 0.5 // Use a fixed value as fallback
+	}
+	jitterFactor := 1.0 - r.jitter + random*2*r.jitter
 	delay = time.Duration(float64(delay) * jitterFactor)
 
 	return delay

@@ -3,3 +3,4 @@
 provider_config.yaml
 
 *.sh
+./pkg

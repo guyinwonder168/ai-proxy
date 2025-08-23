@@ -1,0 +1,93 @@
+# Ignore all .env files to prevent leaking sensitive information
+.env
+.env.*
+
+# Ignore Git directory and files
+.git/
+.gitignore
+.gitmodules
+.gitattributes
+
+# Ignore IDE configuration
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Ignore KiloCode configuration
+.kilocode/
+
+# Ignore GitHub configuration
+.github/
+
+# Ignore any test or development files
+*_test.go
+*.test
+.coverage
+coverage.*
+coverage/
+go.mod
+go.sum
+
+# Ignore documentation files (except those needed for the application)
+README.md
+LICENSE
+CHANGELOG.md
+CONTRIBUTING.md
+docs/
+
+# Ignore Docker files (except the one being used for build)
+Dockerfile
+Dockerfile.*
+.dockerignore
+
+# Ignore configuration files that should be mounted or provided at runtime
+provider_config.yaml
+config.yaml
+*.config
+
+# Ignore scripts directory (except entrypoint script which is explicitly copied)
+scripts/
+!scripts/docker-entrypoint.sh
+
+# Ignore build artifacts and temporary files
+bin/
+build/
+dist/
+out/
+tmp/
+temp/
+*.tmp
+*.log
+logs/
+
+# Ignore Go specific files
+Gopkg.lock
+Gopkg.toml
+glide.lock
+glide.yaml
+vendor/
+
+# Ignore OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Ignore editor files
+*.sublime-project
+*.sublime-workspace
+*.vimrc
+*.vscode
+
+# Ignore certificate files and other sensitive data
+*.pem
+*.key
+*.crt
+*.cert
+id_rsa
+id_rsa.pub
