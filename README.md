@@ -1,5 +1,5 @@
-[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=evgensoft_ai-proxy&metric=bugs)](https://sonarcloud.io/summary/new_code?id=evgensoft_ai-proxy)
-[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=evgensoft_ai-proxy&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=evgensoft_ai-proxy)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=guyinwonder168_ai-proxy&metric=bugs)](https://sonarcloud.io/summary/new_code?id=guyinwonder168_ai-proxy)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=guyinwonder168_ai-proxy&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=guyinwonder168_ai-proxy)
 
 # Proxy for LLM Providers (Fork)
 
