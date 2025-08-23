@@ -17,7 +17,7 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Rename config file
-      run: mv config-example.yaml config.yaml
+      run: mv provider_config-example.yaml provider_config.yaml
 
     - name: Set up Go
       uses: actions/setup-go@v4

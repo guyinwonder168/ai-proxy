@@ -1,112 +1,43 @@
 package main
 
 import (
-	_ "embed"
-	"encoding/json"
+	"embed"
 	"flag"
 	"fmt"
 	"log"
-	"net/http"
 
-	"ai-proxy/internal"
-	"ai-proxy/internal/gigachat"
-
-	"gopkg.in/yaml.v3"
+	"ai-proxy/internal/server"
 )
 
-//go:embed config.yaml
-var configBytes []byte
+var (
+	version = "dev"
+	commit  = "none"
+	date    = "unknown"
+)
 
-// var config internal.Config
-
-type Config struct {
-	Models []internal.Model `yaml:"models"`
-}
-
-func authMiddleware(next http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, req *http.Request) {
-		if req.Header.Get("Authorization") != "Bearer QVBJIFRPS0VOIEZPUiBBSS1QUk9YWQ==" {
-			if hijacker, ok := w.(http.Hijacker); ok {
-				conn, _, err := hijacker.Hijack()
-				if err == nil {
-					conn.Close() // Close the connection to simulate a break.
-
-					return
-				}
-			}
-
-			http.Error(w, "", http.StatusNetworkAuthenticationRequired)
-
-			return
-		}
-		// If authorized, call the next handler
-		next(w, req)
-	}
-}
-
-func ping(w http.ResponseWriter, req *http.Request) {
-	w.Write([]byte("OK"))
-}
-
-func listModels(w http.ResponseWriter, req *http.Request) {
-	type Data struct {
-		ID string `json:"id"`
-	}
-
-	type Models struct {
-		Object string `json:"object"`
-		Data   []Data `json:"data"`
-	}
-
-	var models Models
-
-	models.Object = "list"
-
-	for _, v := range internal.Models {
-		models.Data = append(models.Data, Data{ID: v.Name})
-	}
-
-	models.Data = append(models.Data, Data{ID: "SMALL"})
-	models.Data = append(models.Data, Data{ID: "BIG"})
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(models)
-}
+//go:embed provider_config.yaml
+var configFile embed.FS
 
 func main() {
-	// Define a flag for the port
-	port := flag.Int("port", 8080, "Port to listen on")
+	// CLI flags
+	showVersion := flag.Bool("version", false, "print version and exit")
+	configPath := flag.String("config", "", "path to provider_config.yaml (overrides embedded)")
+	envFilePath := flag.String("env-file", "", "path to .env file")
+	addr := flag.String("addr", "", "listen address override, e.g., :8080")
 	flag.Parse()
 
-	var config Config
+	if *showVersion {
+		fmt.Printf("ai-proxy %s (commit %s, built %s)\n", version, commit, date)
+		return
+	}
 
-	err := yaml.Unmarshal(configBytes, &config)
+	// Create and start the server
+	srv, err := server.NewServerFromConfig(configFile, *configPath, *envFilePath, *addr)
 	if err != nil {
-		log.Fatalf("Error Unmarshal config: %v", err)
+		log.Fatal(err.Error())
 	}
 
-	internal.RateLimits = make(map[string]*internal.RateLimit)
-
-	for _, v := range config.Models {
-		internal.Models = append(internal.Models, v)
-		internal.RateLimits[v.Name] = &internal.RateLimit{}
-
-		if v.Provider == "gigachat" {
-			gigachat.InitClient(v.Token)
-		}
-
-		log.Println("Load model ", v.Name)
+	if err := srv.Start(); err != nil {
+		log.Fatal(err.Error())
 	}
-
-	log.Printf("Listening on port %d", *port)
-
-	mux := http.NewServeMux()
-	// Register the middleware
-	// mux.HandleFunc("/", authMiddleware(handleHTTP))
-	mux.HandleFunc("/chat/completions", internal.HandlerTxt)
-	mux.HandleFunc("/image", internal.HandlerImage)
-	mux.HandleFunc("/ping", ping)
-	mux.HandleFunc("/models", listModels)
-
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *port), mux))
 }

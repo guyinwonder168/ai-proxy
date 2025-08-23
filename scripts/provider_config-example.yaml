@@ -1,0 +1,119 @@
+# auth_token: "deprecated_use_env_var"  # Prefer AUTH_TOKEN environment variable
+# curl https://127.0.0.1:8080/chat/completions \
+#   -d '{
+#   "model": "groq/llama-3.2-90b-vision-preview",
+#   "messages": [
+#     {"role": "user", "content": "What is the meaning of life?"}
+#   ]
+# }'
+#
+# Connection Pooling Optimization Notes:
+# The HTTP client configuration in this file uses optimized connection pooling settings
+# for high-concurrency scenarios. The settings in internal/client/http_client.go have
+# been tuned with the following values:
+# - MaxIdleConns: 200 (total idle connections)
+# - MaxIdleConnsPerHost: 50 (idle connections per host)
+# - MaxConnsPerHost: 100 (maximum connections per host)
+# - ExpectContinueTimeout: 1s (timeout for expect continue)
+#
+# These settings can be adjusted based on your specific workload:
+# - For low-concurrency environments, you can reduce these values to save resources
+# - For high-concurrency environments, you may need to increase these values
+# - idle_conn_timeout_seconds should be tuned based on how frequently connections are reused
+models:
+  # gigachat корп. доступ
+  # список моделей - https://developers.sber.ru/docs/ru/gigachat/models
+  # в token прописывается clientID и clientSecret через двоеточие, сам токен живет 30 мин - обновляется автоматом
+  # url не используется (запросы через библиотеку)
+  - name: gigachat/GigaChat
+    provider: gigachat
+    priority: 1
+    requests_per_minute: 60
+    requests_per_hour: 50000
+    requests_per_day: 1000000
+    url: "https://gigachat.devices.sberbank.ru/api/v1"
+    token: "clientID:clientSecret"
+    max_request_length: 32768
+    model_size: SMALL
+    http_client_config:
+      # Connection pooling settings:
+      # timeout_seconds: Overall request timeout
+      # idle_conn_timeout_seconds: How long to keep idle connections alive
+      timeout_seconds: 30
+      idle_conn_timeout_seconds: 90
+
+     
+  # https://huggingface.co/docs/api-inference/supported-models
+  # https://huggingface.co/models?inference=warm&sort=trending - list models
+  # only 1,000 requests per day for all models
+   - name: huggingface/Mistral-Nemo-Instruct-2407
+     provider: huggingface
+     priority: 2
+     requests_per_minute: 50
+     requests_per_hour: 1000
+     requests_per_day: 1000
+     url: "https://api-inference.huggingface.co/models/mistralai/Mistral-Nemo-Instruct-2407/v1/chat/completions"
+     token: "HF_TOKEN"
+     max_request_length: 32768
+     model_size: SMALL
+     http_client_config:
+       # Connection pooling settings:
+       # timeout_seconds: Overall request timeout
+       # idle_conn_timeout_seconds: How long to keep idle connections alive
+       timeout_seconds: 30
+       idle_conn_timeout_seconds: 90
+    
+# https://console.groq.com/docs/models
+# https://console.groq.com/settings/limits
+  - name: groq/llama-3.2-90b-vision-preview
+    provider: groq
+    priority: 1
+    requests_per_minute: 10
+    requests_per_hour: 100
+    requests_per_day: 3500
+    url: "https://api.groq.com/openai/v1/chat/completions"
+    token: "groq_token"
+    max_request_length: 128000
+    model_size: BIG
+    http_client_config:
+      # Connection pooling settings:
+      # timeout_seconds: Overall request timeout
+      # idle_conn_timeout_seconds: How long to keep idle connections alive
+      timeout_seconds: 30
+      idle_conn_timeout_seconds: 90
+
+# https://openrouter.ai/models
+  - name: openrouter/deepseek/deepseek-chat:free
+    provider: openrouter
+    priority: 1
+    requests_per_minute: 20
+    requests_per_hour: 100
+    requests_per_day: 200
+    url: "https://openrouter.ai/api/v1/chat/completions"
+    token: "openrouter_token"
+    max_request_length: 131072
+    model_size: BIG
+    http_client_config:
+      # Connection pooling settings:
+      # timeout_seconds: Overall request timeout
+      # idle_conn_timeout_seconds: How long to keep idle connections alive
+      timeout_seconds: 30
+      idle_conn_timeout_seconds: 90
+
+# https://glama.ai/models - роутер с кучей моделей
+  - name: glama/gemini-2.0-flash-thinking-exp-01-21
+    provider: glama
+    priority: 1
+    requests_per_minute: 100
+    requests_per_hour: 3000
+    requests_per_day: 10000
+    url: "https://glama.ai/api/gateway/openai/v1/chat/completions"
+    token: "glama-token"
+    max_request_length: 32000
+    model_size: SMALL
+    http_client_config:
+      # Connection pooling settings:
+      # timeout_seconds: Overall request timeout
+      # idle_conn_timeout_seconds: How long to keep idle connections alive
+      timeout_seconds: 30
+      idle_conn_timeout_seconds: 90
