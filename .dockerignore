@@ -43,13 +43,12 @@ Dockerfile.*
 .dockerignore
 
 # Ignore configuration files that should be mounted or provided at runtime
-provider_config.yaml
+provider-config.yaml
 config.yaml
 *.config
 
-# Ignore scripts directory (except entrypoint script which is explicitly copied)
+# Ignore scripts directory
 scripts/
-!scripts/docker-entrypoint.sh
 
 # Ignore build artifacts and temporary files
 bin/

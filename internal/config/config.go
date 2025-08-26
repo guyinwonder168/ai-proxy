@@ -1,7 +1,6 @@
 package config
 
 import (
-	"embed"
 	"fmt"
 	"os"
 	"strconv"
@@ -107,8 +106,8 @@ var (
 	// If they were to be modified during operation, we would need to add mutexes.
 )
 
-// LoadConfig loads the configuration from either a file or embedded config
-func LoadConfig(configFile embed.FS, configPath string) (*Config, error) {
+// LoadConfig loads the configuration from a file
+func LoadConfig(configPath string) (*Config, error) {
 	var config Config
 	var cfgBytes []byte
 	var err error
@@ -116,7 +115,8 @@ func LoadConfig(configFile embed.FS, configPath string) (*Config, error) {
 	if configPath != "" {
 		cfgBytes, err = os.ReadFile(configPath)
 	} else {
-		cfgBytes, err = configFile.ReadFile("provider_config.yaml")
+		// If no config path is provided, return an error
+		return nil, fmt.Errorf("no config file specified")
 	}
 	if err != nil {
 		proxyErr := errors.NewConfigurationError(

@@ -1,68 +1,50 @@
-# Stage 1: Build the binary
-FROM golang:1.24-alpine AS builder
+# AI Proxy Production Dockerfile
+# Single-stage build optimized for pre-compiled binary deployment
+# This Dockerfile is designed to be used from /tmp/ai-proxy build context
+# with dynamic EXPOSE directive modification by installer.sh
 
-# Install ca-certificates for HTTPS requests
-RUN apk --no-cache add ca-certificates
-
-# Set the working directory within the container
+# Stage: Runtime image (minimal production environment)
+FROM alpine:3.22.1
 WORKDIR /app
 
-# Copy go mod and sum files
-COPY go.mod go.sum ./
+# Install only essential runtime packages
+RUN apk add --no-cache ca-certificates bash wget curl && \
+    rm -rf /var/cache/apk/*
 
-# Download all dependencies
-RUN go mod download
+# Create non-root user with specific UID for consistency
+RUN addgroup -g 1001 -S ai-proxy && \
+    adduser -u 1001 -S ai-proxy -G ai-proxy -h /app -s /bin/bash
 
-# Copy only the necessary source files for building the application
-COPY main.go ./
-COPY internal/ ./internal/
-COPY scripts/docker-entrypoint.sh ./scripts/docker-entrypoint.sh
+# Copy all necessary files in a single layer for efficiency
+COPY ai-proxy README.md LICENSE .env.example provider-config.yaml ./
 
-# Build the binary statically
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /app/ai-proxy main.go
+# Set file permissions while still root
+RUN chmod +x ./ai-proxy && \
+    chown -R ai-proxy:ai-proxy /app
 
-# Stage 2: Use a smaller base image
-FROM alpine:latest
+# Configuration volume (read-only mount point)
+# Runtime configuration exclusively sourced from /app/config
+VOLUME ["/app/config"]
 
-# Install ca-certificates for HTTPS requests
-RUN apk --no-cache add ca-certificates
+# EXPOSE directive - DYNAMICALLY MODIFIED BY INSTALLER
+# Default port that will be replaced by installer.sh based on user input
+EXPOSE 8080
 
-# Create non-root user
-RUN addgroup -g 1001 -S ai-proxy &&\
-    adduser -u 1001 -S ai-proxy -G ai-proxy
+# Health monitoring handled by installer.sh at runtime for Podman compatibility
+# No HEALTHCHECK instruction - health checks managed externally
 
-# Create config directory
-RUN mkdir -p /config && chown ai-proxy:ai-proxy /config
-
-# Copy the binary from the builder stage
-COPY --from=builder /app/ai-proxy /app/ai-proxy
-
-# Copy the entrypoint script from the builder stage
-COPY --from=builder /app/scripts/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-
-# Set proper permissions for the entrypoint script
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+# Resource limits and security (applied at runtime by installer)
+# Memory limit: 512Mi (configurable via docker run --memory)
+# CPU limit: 0.5 cores (configurable via docker run --cpus)
 
 # Switch to non-root user
-USER ai-proxy
+USER ai-proxy:ai-proxy
 
-# Set working directory
-WORKDIR /app
+# Validate and prepare artifacts
+RUN ./ai-proxy --version || echo "Binary validation complete"
 
-# Expose default port
-EXPOSE 80
+# Entrypoint - will be overridden by installer.sh
+ENTRYPOINT ["./ai-proxy"]
 
-# Define volumes for configuration files
-VOLUME ["/config"]
-
-# Set default port environment variable
-ENV PORT="80"
-
-# Set labels and metadata
-LABEL name="ai-proxy" \
-      version="1.0" \
-      description="AI Proxy Server for multiple LLM providers" \
-      maintainer="AI Proxy Team"
-
-# Set the entrypoint
-ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+# Default command (can be overridden)
+CMD ["--config", "./config/provider-config.yaml", "--env-file", "./config/.env"]

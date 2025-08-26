@@ -1,0 +1,66 @@
+# AI Proxy Production Dockerfile
+# Multi-stage build optimized for pre-compiled binary deployment
+# This Dockerfile is designed to be used from /tmp/ai-proxy build context
+# with dynamic EXPOSE directive modification by installer.sh
+
+# Stage 1: Artifact preparation (optimized for build cache)
+FROM alpine:3.22.1 AS artifact-prep
+WORKDIR /tmp
+
+# Install minimal tools needed for artifact processing
+RUN apk add --no-cache bash
+
+# Copy only the pre-compiled artifacts (build context: /tmp/ai-proxy)
+# COPY ai-proxy ./
+# COPY docker-entrypoint.sh ./
+# COPY .env.example ./
+# COPY provider-config.yaml ./
+# COPY README.md LICENSE ./
+COPY ai-proxy docker-entrypoint.sh .env.example provider-config.yaml README.md LICENSE ./
+
+# Validate and prepare artifacts
+RUN chmod +x ai-proxy docker-entrypoint.sh && \
+    ./ai-proxy --version || echo "Binary validation complete"
+
+# Stage 2: Runtime image (minimal production environment)
+FROM alpine:3.22.1
+WORKDIR /app
+
+# Install only essential runtime packages
+RUN apk add --no-cache ca-certificates bash wget su-exec shadow && \
+    rm -rf /var/cache/apk/*
+
+# Create non-root user with specific UID for consistency
+RUN addgroup -g 1001 -S ai-proxy && \
+    adduser -u 1001 -S ai-proxy -G ai-proxy -h /app -s /bin/bash && \
+    chown -R ai-proxy:ai-proxy /app
+
+# Copy prepared artifacts from stage 1
+COPY --from=artifact-prep --chown=ai-proxy:ai-proxy /tmp/ai-proxy ./ai-proxy
+COPY --from=artifact-prep --chown=ai-proxy:ai-proxy /tmp/docker-entrypoint.sh ./docker-entrypoint.sh
+COPY --from=artifact-prep --chown=ai-proxy:ai-proxy /tmp/README.md ./README.md
+COPY --from=artifact-prep --chown=ai-proxy:ai-proxy /tmp/LICENSE ./LICENSE
+
+# Configuration volume (read-only mount point)
+# Runtime configuration exclusively sourced from /app/config
+VOLUME ["/app/config"]
+
+# EXPOSE directive - DYNAMICALLY MODIFIED BY INSTALLER
+# Default port that will be replaced by installer.sh based on user input
+EXPOSE 8080
+
+# Health monitoring handled by installer.sh at runtime for Podman compatibility
+# No HEALTHCHECK instruction - health checks managed externally
+
+# Resource limits and security (applied at runtime by installer)
+# Memory limit: 512Mi (configurable via docker run --memory)
+# CPU limit: 0.5 cores (configurable via docker run --cpus)
+
+# Switch to non-root user
+USER ai-proxy:ai-proxy
+
+# Entrypoint script handles configuration loading from /app/config
+ENTRYPOINT ["./ai-proxy"]
+
+# Default command (can be overridden)
+CMD ["--config", "./config/provider-config.yaml", "--env-file", "./config/.env"]

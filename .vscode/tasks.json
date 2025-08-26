@@ -12,6 +12,23 @@
       "options": { "env": { "LANG": "C.UTF-8", "LC_ALL": "C.UTF-8" } },
       "group": { "kind": "build", "isDefault": true },
       "problemMatcher": "$go"
+    },
+
+    {
+        "label": "Start Qdrant",
+        "type": "shell",
+        "command": "distrobox-host-exec podman start qdrant",
+        "group": {
+            "kind": "build",
+            "isDefault": true
+        },
+        "presentation": {
+            "reveal": "silent",
+            "panel": "dedicated"
+        },
+        "runOptions": {
+            "runOn": "folderOpen"
+        }
     }
   ]
 }

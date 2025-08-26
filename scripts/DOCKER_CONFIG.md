@@ -26,7 +26,7 @@ cat > ./ai-proxy-config/.env << EOF
 # REQUIRED: Proxy access token for API access
 AUTH_TOKEN="your_secure_token_here"
 
-# Optional: Port to listen on (default: 80)
+# Optional: Port to listen on (default: 8080)
 PORT="8080"
 
 # Optional: Retry configuration
@@ -95,7 +95,7 @@ docker build -t ai-proxy -f scripts/Dockerfile .
 docker run -d \
   --name ai-proxy \
   -p 8080:8080 \
-  -v "$(pwd)/ai-proxy-config:/config" \
+  -v "$(pwd)/ai-proxy-config:/app/config" \
   ai-proxy
 ```
 
@@ -115,7 +115,7 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./ai-proxy-config:/config
+      - ./ai-proxy-config:/app/config
     restart: unless-stopped
 ```
 
@@ -204,7 +204,7 @@ docker port ai-proxy
 docker exec ai-proxy env
 
 # Check mounted files inside the container
-docker exec ai-proxy ls -la /config
+docker exec ai-proxy ls -la /app/config
 ```
 
 ## Best Practices
@@ -234,7 +234,6 @@ services:
           cpus: '0.5'
 ```
 
-
 By following this guide, you can easily configure and manage your AI Proxy service using Docker with mounted configuration files.
 
 ## VPS Deployment Guide
@@ -257,7 +256,6 @@ Before deploying to your VPS, ensure you have:
    ```
 3. The following files from the repository:
    - `scripts/Dockerfile` - Container image definition
-   - `scripts/docker-entrypoint.sh` - Container entrypoint script
    - `scripts/build-release.sh` - Build script (optional)
 
 ### 2. Preparing Configuration Files
@@ -273,7 +271,7 @@ cat > ~/ai-proxy-config/.env << EOF
 # REQUIRED: Proxy access token for API access
 AUTH_TOKEN="your_secure_token_here"
 
-# Optional: Port to listen on (default: 80)
+# Optional: Port to listen on (default: 8080)
 PORT="8080"
 
 # Optional: Retry configuration
@@ -338,7 +336,7 @@ cd ai-proxy
 podman run -d \
   --name ai-proxy \
   -p 8080:8080 \
-  -v "$(pwd)/ai-proxy-config:/config:Z" \
+  -v "$(pwd)/ai-proxy-config:/app/config:Z" \
   ai-proxy:latest
 ```
 
@@ -356,7 +354,7 @@ podman build -t ai-proxy -f scripts/Dockerfile .
 podman run -d \
   --name ai-proxy \
   -p 8080:8080 \
-  -v "$(pwd)/ai-proxy-config:/config:Z" \
+  -v "$(pwd)/ai-proxy-config:/app/config:Z" \
   ai-proxy:latest
 ```
 
@@ -405,7 +403,7 @@ Group=user
 Environment=PODMAN_SYSTEMD_UNIT=1
 Restart=on-failure
 TimeoutStopSec=70
-ExecStart=/usr/bin/podman run -d --name ai-proxy -p 8080:8080 -v /home/user/ai-proxy-config:/config:Z ai-proxy:latest
+ExecStart=/usr/bin/podman run -d --name ai-proxy -p 8080:8080 -v /home/user/ai-proxy-config:/app/config:Z ai-proxy:latest
 ExecStop=/usr/bin/podman stop -t 10 ai-proxy
 ExecReload=/usr/bin/podman restart ai-proxy
 KillMode=none

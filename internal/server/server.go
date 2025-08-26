@@ -3,7 +3,6 @@ package server
 
 import (
 	"context"
-	"embed"
 	"fmt"
 	"log"
 	"net/http"
@@ -94,7 +93,7 @@ func (s *Server) ReloadAuthMiddleware(newAuthToken string) {
 }
 
 // NewServerFromConfig creates a new Server instance by loading configuration from files and environment variables.
-func NewServerFromConfig(configFile embed.FS, configPath, envFilePath, addr string) (*Server, error) {
+func NewServerFromConfig(configPath, envFilePath, addr string) (*Server, error) {
 	// Load .env file if specified or try default locations
 	var envFile map[string]string
 	var err error
@@ -135,8 +134,8 @@ func NewServerFromConfig(configFile embed.FS, configPath, envFilePath, addr stri
 	// Load retry configuration from environment variables
 	retryMaxRetries, retryBaseDelay, retryMaxDelay, retryJitter := config.LoadRetryConfig(envFile)
 
-	// Load provider config: CLI --config wins; otherwise use embedded file
-	config, err := config.LoadConfig(configFile, configPath)
+	// Load provider config: CLI --config is required
+	config, err := config.LoadConfig(configPath)
 	if err != nil {
 		return nil, err
 	}
