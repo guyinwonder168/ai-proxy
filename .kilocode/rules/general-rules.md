@@ -15,7 +15,7 @@ Normative keywords: MUST, SHOULD, MAY follow [RFC 2119] semantics.
 - Choose readability and maintainability first; optimize only for real constraints (performance, memory, security, availability).
 ### Style & Standards
 - When a project toolchain is specified, use it. If none is specified, default to:
-- Go: gofmt, go vet, golangci-lint; follow Effective Go.
+- Go: gofmt, go vet, golangci-lint; follow Effective Go; follow Go sonarqube way as possible .
 
 - PHP: PSR-12, phpcs/php-cs-fixer; prefer strict types.
 
@@ -48,6 +48,8 @@ Normative keywords: MUST, SHOULD, MAY follow [RFC 2119] semantics.
 - Include at least one runnable usage example (or a quickstart snippet).
 - Validate inputs early; fail fast with clear error messages.
 - Pure functions SHOULD be favored; side effects isolated.
+- use Qdrant mcp as much as possilbe when you need to understand code within a file 
+- after all task done then reindex the code base with Qdrant MCP tools
 
 ### Error Handling & Logging
 - MUST return/propagate errors with actionable context (no silent failures).

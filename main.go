@@ -1,7 +1,6 @@
 package main
 
 import (
-	"embed"
 	"flag"
 	"fmt"
 	"log"
@@ -15,13 +14,10 @@ var (
 	date    = "unknown"
 )
 
-//go:embed provider_config.yaml
-var configFile embed.FS
-
 func main() {
 	// CLI flags
 	showVersion := flag.Bool("version", false, "print version and exit")
-	configPath := flag.String("config", "", "path to provider_config.yaml (overrides embedded)")
+	configPath := flag.String("config", "", "path to provider-config.yaml (required)")
 	envFilePath := flag.String("env-file", "", "path to .env file")
 	addr := flag.String("addr", "", "listen address override, e.g., :8080")
 	flag.Parse()
@@ -32,7 +28,7 @@ func main() {
 	}
 
 	// Create and start the server
-	srv, err := server.NewServerFromConfig(configFile, *configPath, *envFilePath, *addr)
+	srv, err := server.NewServerFromConfig(*configPath, *envFilePath, *addr)
 	if err != nil {
 		log.Fatal(err.Error())
 	}

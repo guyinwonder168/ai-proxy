@@ -1,6 +1,16 @@
 # env file
 .env
-provider_config.yaml
-
-*.sh
-./pkg
+provider-config.yaml
+pkg/*
+.vscode
+* copy.*
+scripts/old/*
+pkg/ai-proxy-release.tar.gz
+pkg/installer.sh
+pkg/ai-proxy-0.0-dev+73e174d/.env.example
+pkg/ai-proxy-0.0-dev+73e174d/ai-proxy
+pkg/ai-proxy-0.0-dev+73e174d/Dockerfile
+pkg/ai-proxy-0.0-dev+73e174d/INSTALL.md
+pkg/ai-proxy-0.0-dev+73e174d/LICENSE
+pkg/ai-proxy-0.0-dev+73e174d/README.md
+scripts/Dockerfile copy

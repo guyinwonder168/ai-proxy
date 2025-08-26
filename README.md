@@ -65,9 +65,9 @@ cd ai-proxy
 - `.env` - Proxy settings (proxy access token, port)
   - Copy from `scripts/.env.example`
   - Set `AUTH_TOKEN` to a secure proxy access token for authenticating requests to this proxy
-- `provider_config.yaml` - Provider-specific configurations
-  - Uses embedded configuration by default
-  - Override with `--config` CLI flag
+- `provider-config.yaml` - Provider-specific configurations
+  - Configuration file is required
+  - Use `--config` CLI flag to specify path
   - Add API keys for each provider
 
 > ✅ You can list multiple models from different providers in the same file.
@@ -106,7 +106,7 @@ AUTH_TOKEN="your_token_here"  # REQUIRED
 PORT="8080"                   # Optional (default: 8080)
 ```
 
-3. (Optional) Create and edit `provider_config.yaml` with your provider API keys
+3. (Optional) Create and edit `provider-config.yaml` with your provider API keys
 
 4. Build and run:
 ```bash
@@ -137,7 +137,7 @@ go run main.go --help
 # -addr string
 #       listen address override, e.g., :8080
 # -config string
-#       path to provider_config.yaml (overrides embedded)
+#       path to provider-config.yaml (required)
 # -env-file string
 #       path to .env file
 # -version

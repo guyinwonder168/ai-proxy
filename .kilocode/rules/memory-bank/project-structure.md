@@ -1,6 +1,6 @@
 # AI Proxy Server - Project Structure
 
-**Last Updated:** 2025-08-23T20:19:56.487Z
+**Last Updated:** 2025-08-26T15:41:44.149Z
 
 ## Project Overview
 
@@ -10,90 +10,100 @@ The AI Proxy Server is a Go-based HTTP proxy that provides a unified API interfa
 
 ```
 ai-proxy/
-├── .env                           # Environment variables file
-├── .gitignore                     # Git ignore file
-├── .golangci.yml                  # GolangCI-Lint configuration
-├── ai-proxy                       # Compiled binary (output)
-├── go.mod                         # Go module definition
-├── go.sum                         # Go module checksums
-├── LICENSE                        # Project license
-├── main.go                        # Main entry point
-├── provider_config.yaml           # Provider configuration
-├── README.md                      # Project documentation
-├── .github/                       # GitHub configuration
-│   └── workflows/                 # GitHub Actions workflows
-├── .kilocode/                     # KiloCode configuration
-│   └── rules/                     # KiloCode rules
-│       └── memory-bank/           # Memory bank files
-│           ├── analysis.md        # Architecture analysis
-│           ├── architecture.md    # System architecture
-│           ├── brief.md           # Project brief
-│           ├── context.md         # Current work context
-│           ├── tech.md            # Technology stack
-│           └── project-structure.md # This file
-├── .vscode/                       # VSCode configuration
-│   ├── extensions.json            # Recommended extensions
-│   └── settings.json              # Workspace settings
-├── internal/                      # Internal packages
-│   ├── bufferpool/                # Buffer pooling implementation
-│   │   └── pool.go                # Buffer pool implementation
-│   ├── client/                    # HTTP client factory
-│   │   └── http_client.go         # HTTP client creation and configuration
-│   ├── config/                    # Configuration management
-│   │   └── config.go              # Configuration loading and initialization
-│   ├── errors/                    # Error handling utilities
-│   │   └── errors.go              # Structured error types and handling
-│   ├── handlers/                  # HTTP request handlers
-│   │   ├── health.go              # Health check handler
-│   │   ├── image.go               # Image processing handler
-│   │   ├── models.go              # Models listing handler
-│   │   └── proxy.go               # Main proxy handler implementation
-│   ├── middleware/                # HTTP middleware
-│   │   └── auth.go                # Authentication middleware
-│   ├── provider/                  # AI provider adapters
-│   │   ├── registry.go            # Provider registry
-│   │   ├── cloudflare/            # Cloudflare provider adapter
-│   │   │   └── client.go          # Cloudflare API client implementation
-│   │   ├── gemini/                # Google Gemini provider adapter
-│   │   │   └── client.go          # Gemini API client implementation
-│   │   ├── gigachat/              # Sberbank GigaChat provider adapter
-│   │   │   ├── client.go          # GigaChat API client implementation
-│   │   │   └── convert.go         # GigaChat response conversion utilities
-│   │   ├── groq/                  # Groq provider adapter
-│   │   │   └── client.go          # Groq API client implementation
-│   │   ├── openai/                # OpenAI provider adapter
-│   │   │   └── client.go          # OpenAI API client implementation
-│   │   ├── openrouter/            # OpenRouter provider adapter
-│   │   │   ├── client.go          # OpenRouter API client implementation
-│   │   │   ├── client_test.go     # OpenRouter client tests
-│   │   │   ├── convert.go         # OpenRouter response conversion utilities
-│   │   │   └── models.go          # OpenRouter model definitions
-│   ├── schema/                    # Shared data structures
-│   │   └── schema.go              # Provider interface and data structures
-│   ├── server/                    # HTTP server implementation
-│   │   ├── routes.go              # Route registration
-│   │   └── server.go              # Server initialization and management
-│   └── stream/                    # Streaming utilities
-│       └── retry.go               # Streaming retry mechanism implementation
-└── scripts/                       # Deployment and configuration scripts
-    ├── .env.example               # Example environment variables file
-    ├── Dockerfile                 # Docker container configuration
-    └── provider_config-example.yaml # Example provider configuration
+├── .dockerignore                      # Docker ignore file
+├── .env.example                       # Example environment variables file
+├── .gitignore                         # Git ignore file
+├── .golangci.yml                      # GolangCI-Lint configuration
+├── go.mod                             # Go module definition
+├── go.sum                             # Go module checksums
+├── LICENSE                            # Project license
+├── main.go                            # Main entry point
+├── provider-config-example.yaml       # Example provider configuration
+├── README-SECURITY-BRANCH.md          # Security branch documentation
+├── README.md                          # Project documentation
+├── .github/                           # GitHub configuration
+│   └── workflows/                     # GitHub Actions workflows
+├── .kilocode/                         # KiloCode configuration
+│   └── rules/                         # KiloCode rules
+│       └── memory-bank/               # Memory bank files
+│           ├── analysis.md            # Architecture analysis
+│           ├── architecture.md        # System architecture
+│           ├── brief.md               # Project brief
+│           ├── context.md             # Current work context
+│           ├── docker-implementation.md # Docker implementation details
+│           ├── kilo_code_task_aug-21-2025_11-55-51-pm.md # Task log
+│           ├── project-structure.md   # This file
+│           └── tech.md                # Technology stack
+├── .vscode/                           # VSCode configuration
+│   ├── extensions.json                # Recommended extensions
+│   └── settings.json                  # Workspace settings
+├── internal/                          # Internal packages
+│   ├── bufferpool/                    # Buffer pooling implementation
+│   │   └── pool.go                    # Buffer pool implementation
+│   ├── client/                        # HTTP client factory
+│   │   └── http_client.go             # HTTP client creation and configuration
+│   ├── config/                        # Configuration management
+│   │   └── config.go                  # Configuration loading and initialization
+│   ├── errors/                        # Error handling utilities
+│   │   └── errors.go                  # Structured error types and handling
+│   ├── handlers/                      # HTTP request handlers
+│   │   ├── health.go                  # Health check handler
+│   │   ├── image.go                   # Image processing handler
+│   │   ├── models.go                  # Models listing handler
+│   │   └── proxy.go                   # Main proxy handler implementation
+│   ├── middleware/                    # HTTP middleware
+│   │   └── auth.go                    # Authentication middleware
+│   ├── provider/                      # AI provider adapters
+│   │   ├── registry.go                # Provider registry
+│   │   ├── cloudflare/                # Cloudflare provider adapter
+│   │   │   └── client.go              # Cloudflare API client implementation
+│   │   ├── gemini/                    # Google Gemini provider adapter
+│   │   │   └── client.go              # Gemini API client implementation
+│   │   ├── gigachat/                  # Sberbank GigaChat provider adapter
+│   │   │   ├── client.go              # GigaChat API client implementation
+│   │   │   └── convert.go             # GigaChat response conversion utilities
+│   │   ├── groq/                      # Groq provider adapter
+│   │   │   └── client.go              # Groq API client implementation
+│   │   ├── openai/                    # OpenAI provider adapter
+│   │   │   └── client.go              # OpenAI API client implementation
+│   │   ├── openrouter/                # OpenRouter provider adapter
+│   │   │   ├── client_test.go         # OpenRouter client tests
+│   │   │   ├── client.go              # OpenRouter API client implementation
+│   │   │   ├── convert.go             # OpenRouter response conversion utilities
+│   │   │   └── models.go              # OpenRouter model definitions
+│   ├── schema/                        # Shared data structures
+│   │   └── schema.go                  # Provider interface and data structures
+│   ├── server/                        # HTTP server implementation
+│   │   ├── routes.go                  # Route registration
+│   │   └── server.go                  # Server initialization and management
+│   └── stream/                        # Streaming utilities
+│       └── retry.go                   # Streaming retry mechanism implementation
+└── scripts/                           # Deployment and configuration scripts
+    ├── .env.example                   # Example environment variables file
+    ├── ARTIFACT_STRUCTURE.md          # Artifact structure documentation
+    ├── build-release.sh               # Release build script
+    ├── DOCKER_CONFIG.md               # Docker configuration documentation
+    ├── Dockerfile                     # Docker container configuration
+    ├── installer.sh                   # Automated installation script
+    ├── provider-config-example.yaml   # Example provider configuration
+    ├── README_PRODUCTION_DEPLOYMENT.md # Production deployment documentation
+    └── README.md                      # Scripts documentation
 ```
 
 ## File Descriptions
 
 ### Root Level Files
 
-- **`.env`** - Environment variables file showing required configuration options
+- **`.dockerignore`** - Specifies files and directories to ignore in Docker builds
+- **`.env.example`** - Example environment variables file showing required configuration options
 - **`.gitignore`** - Specifies intentionally untracked files to ignore in Git
 - **`.golangci.yml`** - Configuration file for GolangCI-Lint static analysis tool
-- **`ai-proxy`** - The compiled binary output of the application
 - **`go.mod`** - Go module definition file listing dependencies
 - **`go.sum`** - Go module checksums for dependency verification
 - **`LICENSE`** - The project license file
 - **`main.go`** - Main entry point of the application, initializes providers and starts HTTP server
-- **`provider_config.yaml`** - Configuration file for AI providers
+- **`provider-config-example.yaml`** - Example configuration file for AI providers
+- **`README-SECURITY-BRANCH.md`** - Security branch documentation
 - **`README.md`** - Main project documentation with setup and usage instructions
 
 ### .github Directory
@@ -108,8 +118,10 @@ ai-proxy/
   - **`architecture.md`** - System architecture documentation with diagrams
   - **`brief.md`** - Project brief and core features overview
   - **`context.md`** - Current work focus and recent changes
-  - **`tech.md`** - Technology stack and implementation details
+  - **`docker-implementation.md`** - Docker implementation details
+  - **`kilo_code_task_aug-21-2025_11-5-51-pm.md`** - Task log
   - **`project-structure.md`** - This file containing project structure documentation
+  - **`tech.md`** - Technology stack and implementation details
 
 ### .vscode Directory
 
@@ -160,8 +172,8 @@ The provider package contains all AI provider adapters, each implementing the Pr
 - **`groq/`** - Groq provider adapter implementing the Provider interface for Groq's API with proper mutex-based throttling.
 - **`openai/`** - OpenAI provider adapter implementing the Provider interface for OpenAI-compatible APIs.
 - **`openrouter/`** - OpenRouter provider adapter implementing the Provider interface for OpenRouter's API, including streaming support.
- - **`client.go`** - OpenRouter API client implementation
   - **`client_test.go`** - Tests for the OpenRouter client implementation.
+  - **`client.go`** - OpenRouter API client implementation
   - **`convert.go`** - OpenRouter response conversion utilities for translating API responses.
   - **`models.go`** - OpenRouter model definitions and configurations.
 
@@ -181,8 +193,14 @@ The provider package contains all AI provider adapters, each implementing the Pr
 ### scripts Directory
 
 - **`.env.example`** - Example environment variables file showing required configuration options
+- **`ARTIFACT_STRUCTURE.md`** - Artifact structure documentation
+- **`build-release.sh`** - Release build script for creating deployment artifacts
+- **`DOCKER_CONFIG.md`** - Docker configuration documentation
 - **`Dockerfile`** - Docker container configuration for containerized deployment
-- **`provider_config-example.yaml`** - Example configuration file for AI providers
+- **`installer.sh`** - Automated installation script for production deployment with Docker/Podman support
+- **`provider-config-example.yaml`** - Example configuration file for AI providers
+- **`README_PRODUCTION_DEPLOYMENT.md`** - Production deployment documentation
+- **`README.md`** - Scripts documentation
 
 ## Package Relationships
 
@@ -194,6 +212,6 @@ The internal packages are organized with clear separation of concerns:
 4. **Business Logic Layer** (`config/`, `bufferpool/`, `errors/`, `stream/`) - Core business logic, configuration management, error handling, and utility functions
 5. **Provider Adapters** (`provider/`) - Implementations for each AI provider
 6. **Shared Utilities** (`client/`, `schema/`) - Common functionality used across providers
-7. **Configuration** (`provider_config.yaml`, `.env`) - Configuration files for setting up providers and environment variables
+7. **Configuration** (`provider-config.yaml`, `.env`) - Configuration files for setting up providers and environment variables
 
 This structure allows for easy addition of new providers while maintaining a consistent interface and shared infrastructure. The clear separation of concerns makes the codebase more maintainable and testable.
